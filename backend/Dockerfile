@@ -2,9 +2,11 @@
 FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
 WORKDIR /app
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+COPY settings.xml .
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -s settings.xml -B \
+    -Dmaven.wagon.http.retryHandler.count=5 \
+    -Dmaven.wagon.http.pool=false
 
 # Stage 2: Runtime Image
 FROM eclipse-temurin:21-jre-alpine
