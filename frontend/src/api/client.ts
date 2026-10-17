@@ -12,10 +12,20 @@ import {
   User,
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+const resolveBaseUrl = () => {
+  let url = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1').trim();
+  url = url.replace(/\/+$/, '');
+  if (!url.endsWith('/api/v1')) {
+    url = `${url}/api/v1`;
+  }
+  return url;
+};
+
+const API_BASE_URL = resolveBaseUrl();
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 60000, // 60s timeout to gracefully accommodate Render free-tier cold starts
   headers: {
     'Content-Type': 'application/json',
   },

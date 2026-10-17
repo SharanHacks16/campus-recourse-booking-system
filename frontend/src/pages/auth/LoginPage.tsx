@@ -42,7 +42,12 @@ export const LoginPage: React.FC = () => {
         navigate(from === '/login' ? '/dashboard' : from, { replace: true });
       }
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Invalid email or password. Please try again.';
+      let msg = 'Invalid email or password. Please try again.';
+      if (err.response?.data?.message) {
+        msg = err.response.data.message;
+      } else if (!err.response) {
+        msg = 'Cannot connect to server. If the backend is on Render free tier, please wait ~30 seconds for it to wake up.';
+      }
       setError(msg);
       toast.error(msg);
     } finally {
