@@ -11,10 +11,11 @@ RUN mvn clean package -DskipTests -s settings.xml -B \
 # Stage 2: Runtime Image
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
+    && mkdir -p /app/data && chown -R appuser:appgroup /app
 USER appuser
 COPY --from=builder /app/target/campus-booking-backend-*.jar app.jar
 
 EXPOSE 8080
-ENV SPRING_PROFILES_ACTIVE=mysql
+ENV SPRING_PROFILES_ACTIVE=dev
 ENTRYPOINT ["java", "-jar", "app.jar"]
